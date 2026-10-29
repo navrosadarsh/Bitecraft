@@ -1,0 +1,4 @@
+alex|password123|Alexander Wright|+1 (555) 234-5678|88 Tech Boulevard, 4th Floor
+jane|pass123|Jane Doe|+1 (555) 987-6543|452 Innovation Blvd, Tech Park, Suite 12B
+elena|secretpassword|Elena Rostova|+1 (555) 678-1234|14 Orchid Lane, Apt 8
+navrosadarsh@gmail.com|Adarsh@2008|Adarsh Navros|+917738499430|sandip foundation

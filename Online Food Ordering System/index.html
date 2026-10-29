@@ -1,0 +1,2666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BiteCraft Gourmet | Artisanal Food Ordering</title>
+  
+  <!-- Modern Typography from Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ========================================================================= */
+    /* DESIGN TOKENS & CSS VARIABLES                                             */
+    /* ========================================================================= */
+    :root {
+      --primary: #00ff88;          /* Vibrant electric neon green */
+      --primary-hover: #00e67a;
+      --primary-light: rgba(0, 255, 136, 0.12);
+      
+      --secondary: #00f5d4;        /* Electric neon cyan / mint */
+      --secondary-hover: #00d9bc;
+      --secondary-light: rgba(0, 245, 212, 0.12);
+      
+      --accent: #10ff97;           /* Bright cyber lime */
+      --danger: #ff3860;           /* Electric neon coral red */
+      --danger-light: rgba(255, 56, 96, 0.14);
+
+      --bg-dark: #060907;          /* Ultra-deep obsidian black */
+      --bg-surface: #0a110d;       /* Sleek matte black surface */
+      --bg-card: #0f1813;          /* Elevated black card */
+      --bg-card-hover: #14221a;
+      --bg-input: #070c09;
+
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-subtle: #64748b;
+
+      --border-subtle: rgba(0, 255, 136, 0.1);
+      --border-focus: rgba(0, 255, 136, 0.6);
+
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.65);
+      --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.85);
+      --shadow-glow: 0 0 25px rgba(0, 255, 136, 0.35);
+
+      --transition-fast: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-normal: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Base Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.5;
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ========================================================================= */
+    /* LAYOUT & NAVBAR                                                           */
+    /* ========================================================================= */
+    .app-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 1.5rem 3rem;
+    }
+
+    header.navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(6, 9, 7, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 1rem 1.5rem;
+      margin: 0 -1.5rem 2rem;
+    }
+
+    .nav-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .brand-text h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(to right, #ffffff, #d1fae5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
+    }
+
+    .brand-text span {
+      font-size: 0.75rem;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+    }
+
+    .server-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(0, 255, 136, 0.1);
+      border: 1px solid rgba(0, 255, 136, 0.3);
+      padding: 0.35rem 0.85rem;
+      border-radius: var(--radius-full);
+      font-size: 0.78rem;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--primary);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--primary);
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.35); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    /* Common Base for All Navbar Action Buttons: Unified 42px Height & Pill Curvature */
+    .nav-actions .btn-icon-outline,
+    .nav-actions .btn-signup-pill,
+    .nav-actions .btn-cart-toggle,
+    .btn-nav-btn {
+      height: 42px;
+      padding: 0 1.25rem;
+      border-radius: var(--radius-full);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+      cursor: pointer;
+      box-sizing: border-box;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* 1. Sign In Button: Sleek Translucent Glass Pill */
+    .nav-actions .btn-icon-outline,
+    .btn-nav-signin {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #f1f5f9;
+      font-weight: 600;
+    }
+
+    .nav-actions .btn-icon-outline:hover,
+    .btn-nav-signin:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.28);
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Fallback for generic btn-icon-outline outside navbar (e.g. receipt print) */
+    .btn-icon-outline {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 0.55rem 1rem;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: var(--transition-fast);
+    }
+
+    .btn-icon-outline:hover {
+      background: var(--bg-card);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* 2. Sign Up Button: Matching 42px Vibrant Gourmet Pill */
+    .btn-signup-pill,
+    .btn-nav-signup {
+      height: 42px;
+      box-sizing: border-box;
+      padding: 0 1.25rem;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #040d07;
+      border: 1px solid rgba(0, 255, 136, 0.5);
+      border-radius: var(--radius-full);
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      box-shadow: 0 2px 14px rgba(0, 255, 136, 0.35);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      white-space: nowrap;
+    }
+
+    .btn-signup-pill:hover,
+    .btn-nav-signup:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 22px rgba(0, 255, 136, 0.55);
+      filter: brightness(1.08);
+    }
+
+    /* 3. Cart Button: Matching 42px Hero CTA with Badge */
+    .btn-cart-toggle {
+      height: 42px;
+      box-sizing: border-box;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #040d07;
+      border: 1px solid rgba(0, 255, 136, 0.5);
+      padding: 0 1.15rem 0 1.25rem;
+      border-radius: var(--radius-full);
+      font-weight: 700;
+      font-size: 0.88rem;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55rem;
+      box-shadow: 0 2px 14px rgba(0, 255, 136, 0.35);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      white-space: nowrap;
+    }
+
+    .btn-cart-toggle:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 22px rgba(0, 255, 136, 0.55);
+      filter: brightness(1.08);
+    }
+
+    .cart-badge {
+      background: #040d07;
+      color: var(--primary);
+      font-size: 0.75rem;
+      min-width: 22px;
+      height: 22px;
+      padding: 0 6px;
+      border-radius: var(--radius-full);
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    /* Auth & User Profile Navigation Styles (Uniform 42px Height) */
+    .user-pill-container {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .user-profile-pill {
+      height: 42px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 136, 0.35);
+      color: var(--text-main);
+      padding: 0 1rem 0 0.5rem;
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-sizing: border-box;
+      white-space: nowrap;
+    }
+
+    .user-profile-pill:hover {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: var(--primary);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(0, 255, 136, 0.25);
+    }
+
+    .user-avatar-circle {
+      width: 30px;
+      height: 30px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 800;
+    }
+
+    .user-display-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .user-orders-tag {
+      background: var(--secondary-light);
+      color: var(--secondary);
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 0.2rem 0.55rem;
+      border-radius: var(--radius-full);
+    }
+
+    .btn-icon-square {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-sizing: border-box;
+    }
+
+    .btn-icon-square:hover {
+      background: var(--danger-light);
+      color: var(--danger);
+      border-color: var(--danger);
+      transform: translateY(-1px);
+    }
+
+    /* Auth Modal Tabs & Helpers */
+    .auth-tabs {
+      display: flex;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 0.3rem;
+      margin-bottom: 1.25rem;
+      gap: 0.3rem;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .auth-tab-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.6rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .auth-tab-btn.active {
+      background: var(--primary);
+      color: #040d07;
+      box-shadow: 0 0 12px rgba(0, 255, 136, 0.4);
+    }
+
+
+
+    /* User Orders Card Styles */
+    .user-order-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      transition: var(--transition-fast);
+    }
+
+    .user-order-card:hover {
+      border-color: rgba(0, 255, 136, 0.35);
+      box-shadow: 0 8px 24px rgba(0, 255, 136, 0.15);
+    }
+
+    .user-order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.65rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .user-order-id {
+      font-family: monospace;
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 0.95rem;
+    }
+
+    .user-order-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--secondary);
+      padding: 0.2rem 0.65rem;
+      border-radius: var(--radius-full);
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .user-order-details {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+      line-height: 1.5;
+    }
+
+    .user-order-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 0.65rem;
+      border-top: 1px dashed var(--border-subtle);
+    }
+
+    .user-order-total {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .user-order-total span {
+      color: var(--primary);
+    }
+
+    /* ========================================================================= */
+    /* HERO BANNER SECTION                                                       */
+    /* ========================================================================= */
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(15, 24, 19, 0.95), rgba(7, 12, 9, 0.9)),
+                  radial-gradient(circle at top right, rgba(0, 255, 136, 0.16), transparent 65%);
+      border: 1px solid rgba(0, 255, 136, 0.18);
+      border-radius: var(--radius-xl);
+      padding: 2.75rem 2.5rem;
+      margin-bottom: 2.5rem;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .hero-content {
+      max-width: 650px;
+      z-index: 2;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--primary-light);
+      border: 1px solid rgba(0, 255, 136, 0.35);
+      color: var(--primary);
+      padding: 0.35rem 0.9rem;
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      box-shadow: 0 0 12px rgba(0, 255, 136, 0.2);
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.6rem;
+      line-height: 1.15;
+      font-weight: 700;
+      margin-bottom: 0.85rem;
+    }
+
+    .hero-title span {
+      background: linear-gradient(to right, #00ff88, #00f5d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 30px rgba(0, 255, 136, 0.25);
+    }
+
+    .hero-desc {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .stat-item h3 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .stat-item p {
+      font-size: 0.78rem;
+      color: var(--text-subtle);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .hero-image-decor {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 7rem;
+      filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 25px rgba(0, 255, 136, 0.25));
+      animation: float 2s ease-in-out infinite;
+      user-select: none;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px) rotate(0deg) scale(1); }
+      50% { transform: translateY(-16px) rotate(5deg) scale(1.05); }
+      100% { transform: translateY(0px) rotate(0deg) scale(1); }
+    }
+
+    /* ========================================================================= */
+    /* FILTER PILLS & SEARCH BAR                                                 */
+    /* ========================================================================= */
+    .controls-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .category-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+    }
+
+    .pill-btn {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 0.55rem 1.25rem;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: var(--transition-fast);
+    }
+
+    .pill-btn:hover {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .pill-btn.active {
+      background: var(--primary);
+      color: #040d07;
+      border-color: var(--primary);
+      font-weight: 700;
+      box-shadow: 0 4px 18px rgba(0, 255, 136, 0.35);
+    }
+
+    .search-box-wrap {
+      position: relative;
+      min-width: 280px;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 0.65rem 1rem 0.65rem 2.5rem;
+      border-radius: var(--radius-full);
+      font-size: 0.88rem;
+      outline: none;
+      transition: var(--transition-fast);
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.25);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-subtle);
+      font-size: 0.95rem;
+      pointer-events: none;
+    }
+
+    /* ========================================================================= */
+    /* MAIN CONTENT GRID & SIDEBAR CART                                          */
+    /* ========================================================================= */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* Menu Cards Grid */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .food-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: var(--transition-normal);
+      position: relative;
+    }
+
+    .food-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(0, 255, 136, 0.35);
+      box-shadow: 0 8px 30px rgba(0, 255, 136, 0.15);
+      background: var(--bg-card-hover);
+    }
+
+    .card-media {
+      position: relative;
+      width: 100%;
+      height: 185px;
+      overflow: hidden;
+      background: #090f0c;
+    }
+
+    .card-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .food-card:hover .card-media img {
+      transform: scale(1.06);
+    }
+
+    .card-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(6, 12, 9, 0.88);
+      backdrop-filter: blur(8px);
+      color: var(--primary);
+      border: 1px solid rgba(0, 255, 136, 0.35);
+      box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .card-category-tag {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(16, 185, 129, 0.85);
+      backdrop-filter: blur(8px);
+      color: #022c22;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+    }
+
+    .card-body {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      color: #fff;
+    }
+
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      line-height: 1.45;
+      margin-bottom: 1.25rem;
+      flex-grow: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 1rem;
+      margin-top: auto;
+    }
+
+    .card-price {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .card-price span {
+      font-size: 0.85rem;
+      color: var(--primary);
+      margin-right: 2px;
+    }
+
+    /* Add to Cart / Counter Button */
+    .btn-add-cart {
+      background: var(--primary);
+      color: #040d07;
+      border: none;
+      padding: 0.55rem 1.1rem;
+      border-radius: var(--radius-full);
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+      transition: var(--transition-fast);
+    }
+
+    .btn-add-cart:hover {
+      background: var(--primary-hover);
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+      transform: scale(1.03);
+    }
+
+    .qty-counter-pill {
+      display: inline-flex;
+      align-items: center;
+      background: var(--bg-surface);
+      border: 1px solid var(--primary);
+      box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .qty-counter-btn {
+      background: transparent;
+      border: none;
+      color: var(--primary);
+      width: 32px;
+      height: 32px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition-fast);
+    }
+
+    .qty-counter-btn:hover {
+      background: var(--primary);
+      color: #040d07;
+    }
+
+    .qty-counter-num {
+      padding: 0 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #fff;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    /* ========================================================================= */
+    /* STICKY CART SIDEBAR                                                       */
+    /* ========================================================================= */
+    .cart-sidebar {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 1.75rem;
+      position: sticky;
+      top: 5.5rem;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100vh - 7rem);
+    }
+
+    .cart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 1rem;
+    }
+
+    .cart-header h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .cart-clear-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-subtle);
+      font-size: 0.78rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: var(--transition-fast);
+    }
+
+    .cart-clear-btn:hover {
+      color: var(--danger);
+      text-decoration: underline;
+    }
+
+    /* Free Delivery Progress Bar */
+    .delivery-progress-wrap {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .delivery-progress-text {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .delivery-progress-text strong {
+      color: var(--secondary);
+    }
+
+    .delivery-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .delivery-bar-fill {
+      height: 100%;
+      background: linear-gradient(to right, var(--secondary), var(--primary));
+      width: 0%;
+      border-radius: var(--radius-full);
+      box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+      transition: width 0.4s ease;
+    }
+
+    /* Items List Container */
+    .cart-items-container {
+      overflow-y: auto;
+      flex-grow: 1;
+      padding-right: 0.25rem;
+      margin-bottom: 1rem;
+      max-height: 280px;
+    }
+
+    .cart-items-container::-webkit-scrollbar {
+      width: 4px;
+    }
+    .cart-items-container::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-full);
+    }
+
+    .cart-empty-state {
+      text-align: center;
+      padding: 2.5rem 1rem;
+      color: var(--text-muted);
+    }
+
+    .cart-empty-state .icon {
+      font-size: 3rem;
+      margin-bottom: 0.75rem;
+      opacity: 0.7;
+    }
+
+    .cart-empty-state p {
+      font-size: 0.9rem;
+    }
+
+    .cart-item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .cart-item-info {
+      flex-grow: 1;
+      min-width: 0;
+    }
+
+    .cart-item-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #fff;
+    }
+
+    .cart-item-price {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .cart-item-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .cart-item-subtotal {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #fff;
+      min-width: 58px;
+      text-align: right;
+    }
+
+    /* Cart Bill Summary */
+    .cart-bill-summary {
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .bill-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.86rem;
+      color: var(--text-muted);
+    }
+
+    .bill-row.grand-total {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+      padding-top: 0.6rem;
+      border-top: 1px dashed var(--border-subtle);
+      margin-top: 0.3rem;
+    }
+
+    .bill-row.grand-total .amount {
+      color: var(--primary);
+      font-size: 1.35rem;
+    }
+
+    .btn-checkout {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #040d07;
+      border: none;
+      padding: 0.9rem;
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      box-shadow: 0 4px 20px rgba(0, 255, 136, 0.35);
+      margin-top: 1rem;
+      transition: var(--transition-fast);
+    }
+
+    .btn-checkout:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(0, 255, 136, 0.55);
+    }
+
+    .btn-checkout:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      filter: grayscale(1);
+    }
+
+    /* ========================================================================= */
+    /* MODALS & OVERLAYS (Checkout, Invoice, Orders History)                      */
+    /* ========================================================================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 7, 13, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+
+    .modal-backdrop.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      max-width: 580px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(20px) scale(0.97);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      padding: 2rem;
+    }
+
+    .modal-backdrop.active .modal-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition-fast);
+    }
+
+    .modal-close-btn:hover {
+      background: var(--bg-card-hover);
+      color: #fff;
+    }
+
+    .modal-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.35rem;
+    }
+
+    .modal-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Checkout Form Elements */
+    .form-group {
+      margin-bottom: 1.15rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .form-input, .form-textarea {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      transition: var(--transition-fast);
+    }
+
+    .form-input:focus, .form-textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.25);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .payment-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .payment-option-card {
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 0.5rem;
+      text-align: center;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: var(--transition-fast);
+    }
+
+    .payment-option-card.active {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    /* Invoice Receipt View */
+    .invoice-header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--secondary);
+      padding: 0.4rem 1rem;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .invoice-id-box {
+      background: var(--bg-card);
+      border: 1px dashed var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .invoice-id-box strong {
+      font-size: 1.1rem;
+      color: var(--primary);
+      font-family: monospace;
+    }
+
+    .invoice-items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.5rem;
+      font-size: 0.86rem;
+    }
+
+    .invoice-items-table th {
+      text-align: left;
+      padding: 0.6rem 0.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-subtle);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+    }
+
+    .invoice-items-table td {
+      padding: 0.65rem 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .invoice-tracker {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin: 1.75rem 0;
+      padding: 0 1rem;
+    }
+
+    .invoice-tracker::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 10%;
+      right: 10%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      z-index: 1;
+    }
+
+    .tracker-step {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .tracker-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 2px solid var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .tracker-step.active .tracker-circle {
+      background: var(--primary);
+      color: #040d07;
+      box-shadow: 0 0 14px var(--primary);
+    }
+
+    /* Print Specific Styles */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #invoiceModal, #invoiceModal * {
+        visibility: visible;
+      }
+      #invoiceModal {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: #fff !important;
+        color: #000 !important;
+      }
+      .modal-card {
+        background: #fff !important;
+        color: #000 !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+      .modal-close-btn, .btn-print, .btn-done {
+        display: none !important;
+      }
+    }
+
+    /* ========================================================================= */
+    /* RESPONSIVE BREAKPOINTS                                                    */
+    /* ========================================================================= */
+    @media (max-width: 1024px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+      .cart-sidebar {
+        position: fixed;
+        right: -100%;
+        top: 0;
+        bottom: 0;
+        width: 360px;
+        max-width: 90vw;
+        max-height: 100vh;
+        z-index: 500;
+        border-radius: 0;
+        transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .cart-sidebar.open {
+        right: 0;
+      }
+      .cart-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 499;
+        display: none;
+      }
+      .cart-overlay.active {
+        display: block;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero-banner {
+        flex-direction: column;
+        padding: 2rem 1.5rem;
+        text-align: center;
+      }
+      .hero-stats {
+        justify-content: center;
+      }
+      .hero-image-decor {
+        display: none;
+      }
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background overlay for mobile cart drawer -->
+  <div class="cart-overlay" id="cartOverlay" onclick="toggleCartDrawer()"></div>
+
+  <div class="app-container">
+    
+    <!-- ===================================================================== -->
+    <!-- TOP NAVIGATION BAR                                                    -->
+    <!-- ===================================================================== -->
+    <header class="navbar">
+      <div class="nav-inner">
+        <div class="brand-group" onclick="filterCategory('All')">
+          <div class="brand-icon">🔥</div>
+          <div class="brand-text">
+            <h1>BiteCraft</h1>
+            <span>Gourmet Kitchen &bull; C Backend</span>
+          </div>
+        </div>
+
+
+        <div class="nav-actions">
+          <!-- Dynamic Auth Container (Sign In / Sign Up OR User Profile Pill) -->
+          <div id="authNavContainer" style="display: flex; align-items: center; gap: 0.65rem;">
+            <!-- Rendered dynamically by renderAuthUI() -->
+          </div>
+          
+          <button class="btn-cart-toggle" onclick="toggleCartDrawer()">
+            <span>🛒</span> <span>Cart</span>
+            <span class="cart-badge" id="navCartCount">0</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===================================================================== -->
+    <!-- HERO BANNER                                                           -->
+    <!-- ===================================================================== -->
+    <section class="hero-banner">
+      <div class="hero-content">
+        <div class="hero-tag">✨ Savor The Exceptional</div>
+        <h2 class="hero-title">Culinary Perfection, <span>Delivered To You.</span></h2>
+        <p class="hero-desc">
+          Crafted by artisanal chefs using farm-to-table organic ingredients. Powered directly by an ultra-fast, bare-metal C HTTP socket web server.
+        </p>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <h3>25-35m</h3>
+            <p>Avg. Delivery Time</p>
+          </div>
+          <div class="stat-item">
+            <h3>4.9 ★</h3>
+            <p>Gourmet Rating</p>
+          </div>
+          <div class="stat-item">
+            <h3>₹199+</h3>
+            <p>Free Delivery</p>
+          </div>
+        </div>
+      </div>
+      <div class="hero-image-decor">
+        🍔
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- CONTROLS: CATEGORIES & SEARCH                                         -->
+    <!-- ===================================================================== -->
+    <div class="controls-wrapper">
+      <div class="category-pills" id="categoryContainer">
+        <button class="pill-btn active" onclick="filterCategory('All')">✨ All Items</button>
+        <button class="pill-btn" onclick="filterCategory('Fast Food')">🍔 Fast Food</button>
+        <button class="pill-btn" onclick="filterCategory('Main Course')">🍝 Main Course</button>
+        <button class="pill-btn" onclick="filterCategory('Beverages')">🍹 Beverages</button>
+        <button class="pill-btn" onclick="filterCategory('Desserts')">🍰 Desserts</button>
+      </div>
+
+      <div class="search-box-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-input" placeholder="Search dishes, ingredients..." oninput="handleSearch()">
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MAIN GRID & CART SIDEBAR                                              -->
+    <!-- ===================================================================== -->
+    <div class="main-layout">
+      
+      <!-- Food Menu Grid -->
+      <main>
+        <div class="menu-grid" id="menuGrid">
+          <!-- Food cards dynamically injected from C backend JSON -->
+        </div>
+      </main>
+
+      <!-- Sticky Cart Sidebar -->
+      <aside class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+          <h2>🛒 Your Order</h2>
+          <button class="cart-clear-btn" onclick="clearCart()">Clear All</button>
+        </div>
+
+        <!-- Free Delivery Progress Bar -->
+        <div class="delivery-progress-wrap">
+          <div class="delivery-progress-text">
+            <span id="deliveryProgressMsg">Add ₹199.00 for FREE Delivery</span>
+            <strong id="deliveryProgressPct">0%</strong>
+          </div>
+          <div class="delivery-bar-bg">
+            <div class="delivery-bar-fill" id="deliveryProgressBar"></div>
+          </div>
+        </div>
+
+        <!-- Cart Items List -->
+        <div class="cart-items-container" id="cartItemsList">
+          <div class="cart-empty-state">
+            <div class="icon">🍽️</div>
+            <p>Your cart is empty.</p>
+            <span style="font-size: 0.78rem; color: var(--text-subtle);">Select mouth-watering items from the menu to get started!</span>
+          </div>
+        </div>
+
+        <!-- Cart Financial Totals -->
+        <div class="cart-bill-summary">
+          <div class="bill-row">
+            <span>Items Subtotal</span>
+            <span id="cartSubtotal">₹0.00</span>
+          </div>
+          <div class="bill-row">
+            <span>Estimated GST (5%)</span>
+            <span id="cartTax">₹0.00</span>
+          </div>
+          <div class="bill-row">
+            <span>Delivery Fee</span>
+            <span id="cartDelivery">₹0.00</span>
+          </div>
+          <div class="bill-row grand-total">
+            <span>Grand Total</span>
+            <span class="amount" id="cartGrandTotal">₹0.00</span>
+          </div>
+
+          <button class="btn-checkout" id="checkoutBtn" onclick="openCheckoutModal()" disabled>
+            <span>Proceed to Checkout</span>
+            <span>&rarr;</span>
+          </button>
+        </div>
+      </aside>
+
+    </div>
+
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- CHECKOUT MODAL                                                          -->
+  <!-- ======================================================================= -->
+  <div class="modal-backdrop" id="checkoutModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeModal('checkoutModal')">&times;</button>
+      
+      <div class="modal-header">
+        <h3 class="modal-title">Complete Your Order</h3>
+        <p class="modal-subtitle">Provide your delivery details so our kitchen can dispatch promptly.</p>
+      </div>
+
+      <form id="checkoutForm" onsubmit="submitOrder(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="custName">Full Name *</label>
+            <input type="text" id="custName" class="form-input" placeholder="e.g. Alexander Wright" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="custPhone">Phone Number *</label>
+            <input type="tel" id="custPhone" class="form-input" placeholder="e.g. +1 (555) 234-5678" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="custAddress">Delivery Address *</label>
+          <input type="text" id="custAddress" class="form-input" placeholder="Street address, apartment, suite, city" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="custNotes">Special Instructions (Optional)</label>
+          <textarea id="custNotes" class="form-textarea" rows="2" placeholder="e.g. Gate code #402, extra napkins, contact-free delivery"></textarea>
+        </div>
+
+        <label class="form-label">Payment Method</label>
+        <div class="payment-options">
+          <div class="payment-option-card active" onclick="selectPayment(this, 'COD')">
+            💵 Cash on Delivery
+          </div>
+          <div class="payment-option-card" onclick="selectPayment(this, 'Card')">
+            💳 Credit / Debit Card
+          </div>
+          <div class="payment-option-card" onclick="selectPayment(this, 'UPI')">
+            📱 UPI / Instant
+          </div>
+        </div>
+
+        <div style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.25rem; font-size: 0.88rem; display: flex; justify-content: space-between; align-items: center;">
+          <span>Payable Amount:</span>
+          <strong style="font-size: 1.25rem; color: var(--primary);" id="modalPayableTotal">₹0.00</strong>
+        </div>
+
+        <button type="submit" class="btn-checkout" id="submitOrderBtn">
+          <span>Confirm & Place Order</span>
+          <span>⚡</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- ORDER INVOICE / RECEIPT MODAL                                           -->
+  <!-- ======================================================================= -->
+  <div class="modal-backdrop" id="invoiceModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeModal('invoiceModal')">&times;</button>
+      
+      <div style="text-align: center;">
+        <div class="invoice-header-badge">
+          <span>✔</span> Order Confirmed &amp; Dispatched to Kitchen
+        </div>
+        <h3 class="modal-title" style="margin-bottom: 0.25rem;">Official Order Invoice</h3>
+        <p class="modal-subtitle">Thank you for dining with BiteCraft Gourmet!</p>
+      </div>
+
+      <!-- Live Order Tracker -->
+      <div class="invoice-tracker">
+        <div class="tracker-step active">
+          <div class="tracker-circle">1</div>
+          <span>Placed</span>
+        </div>
+        <div class="tracker-step active">
+          <div class="tracker-circle">2</div>
+          <span>Kitchen</span>
+        </div>
+        <div class="tracker-step">
+          <div class="tracker-circle">3</div>
+          <span>On Way</span>
+        </div>
+        <div class="tracker-step">
+          <div class="tracker-circle">4</div>
+          <span>Delivered</span>
+        </div>
+      </div>
+
+      <div class="invoice-id-box">
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-subtle); text-transform: uppercase;">Order Number</div>
+          <strong id="invOrderId">ORD-20261022-0000</strong>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 0.75rem; color: var(--text-subtle); text-transform: uppercase;">Date &amp; Time</div>
+          <div id="invTimestamp" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">2026-10-22</div>
+        </div>
+      </div>
+
+      <!-- Customer Summary -->
+      <div style="background: var(--bg-card); border-radius: var(--radius-md); padding: 0.9rem; margin-bottom: 1.25rem; font-size: 0.83rem;">
+        <div style="color: var(--text-subtle); margin-bottom: 0.2rem;">DELIVERING TO:</div>
+        <strong id="invCustName" style="color: #fff; font-size: 0.95rem;">Customer Name</strong>
+        <div id="invCustPhone" style="color: var(--text-muted);">+91 00000 00000</div>
+        <div id="invCustAddress" style="color: var(--text-muted); margin-top: 0.2rem;">Address</div>
+      </div>
+
+      <!-- Itemized Table -->
+      <table class="invoice-items-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th style="text-align: center;">Qty</th>
+            <th style="text-align: right;">Price</th>
+            <th style="text-align: right;">Total</th>
+          </tr>
+        </thead>
+        <tbody id="invItemsBody">
+          <!-- Injected dynamically -->
+        </tbody>
+      </table>
+
+      <!-- Pricing Summary Breakdown -->
+      <div class="cart-bill-summary" style="margin-bottom: 1.5rem;">
+        <div class="bill-row">
+          <span>Items Subtotal</span>
+          <span id="invSubtotal">₹0.00</span>
+        </div>
+        <div class="bill-row">
+          <span>Estimated GST (5%)</span>
+          <span id="invTax">₹0.00</span>
+        </div>
+        <div class="bill-row">
+          <span>Delivery Charge</span>
+          <span id="invDelivery">₹0.00</span>
+        </div>
+        <div class="bill-row grand-total">
+          <span>Final Total Paid</span>
+          <span class="amount" id="invGrandTotal">₹0.00</span>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem;">
+        <button class="btn-icon-outline btn-print" style="flex: 1;" onclick="window.print()">
+          🖨️ Print Invoice
+        </button>
+        <button class="btn-checkout btn-done" style="flex: 1; margin-top: 0;" onclick="closeModal('invoiceModal')">
+          Done &amp; Order More
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- SIGN IN & SIGN UP MODAL                                                 -->
+  <!-- ======================================================================= -->
+  <div class="modal-backdrop" id="authModal">
+    <div class="modal-card" style="max-width: 480px;">
+      <button class="modal-close-btn" onclick="closeModal('authModal')">&times;</button>
+      
+      <div class="modal-header">
+        <h3 class="modal-title" id="authModalTitle">Welcome to BiteCraft</h3>
+        <p class="modal-subtitle" id="authModalSubtitle">Sign in or create an account to track your orders in real-time.</p>
+      </div>
+
+      <!-- Tab Buttons -->
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab-btn active" id="tabBtnLogin" onclick="switchAuthTab('login')">Sign In</button>
+        <button type="button" class="auth-tab-btn" id="tabBtnSignup" onclick="switchAuthTab('signup')">Create Account</button>
+      </div>
+
+      <!-- Alert Banner -->
+      <div id="authAlertBanner" style="display: none; padding: 0.75rem 1rem; border-radius: var(--radius-md); font-size: 0.85rem; margin-bottom: 1.25rem;"></div>
+
+      <!-- Sign In Form -->
+      <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+        <div class="form-group">
+          <label class="form-label" for="loginUsername">Username *</label>
+          <input type="text" id="loginUsername" class="form-input" placeholder="e.g. alex" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="loginPassword">Password *</label>
+          <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn-checkout" id="loginSubmitBtn">
+          <span>Sign In &amp; Track Orders</span>
+          <span>&rarr;</span>
+        </button>
+      </form>
+
+      <!-- Sign Up Form -->
+      <form id="signupForm" style="display: none;" onsubmit="handleSignupSubmit(event)">
+        <div class="form-group">
+          <label class="form-label" for="signupName">Full Name *</label>
+          <input type="text" id="signupName" class="form-input" placeholder="e.g. Marcus Vance" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="signupUsername">Username *</label>
+            <input type="text" id="signupUsername" class="form-input" placeholder="e.g. marcus" required autocomplete="username">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="signupPassword">Password *</label>
+            <input type="password" id="signupPassword" class="form-input" placeholder="Min. 4 chars" required minlength="4" autocomplete="new-password">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="signupPhone">Phone Number *</label>
+          <input type="tel" id="signupPhone" class="form-input" placeholder="e.g. +1 (555) 321-4321" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="signupAddress">Delivery Address *</label>
+          <input type="text" id="signupAddress" class="form-input" placeholder="Street address, apartment, suite" required>
+        </div>
+        <button type="submit" class="btn-checkout" id="signupSubmitBtn">
+          <span>Create Account &amp; Continue</span>
+          <span>✨</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- CUSTOMER PERSONAL ORDERS MODAL                                          -->
+  <!-- ======================================================================= -->
+  <div class="modal-backdrop" id="myOrdersModal">
+    <div class="modal-card" style="max-width: 650px;">
+      <button class="modal-close-btn" onclick="closeModal('myOrdersModal')">&times;</button>
+      
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <h3 class="modal-title">My Orders</h3>
+            <p class="modal-subtitle" id="myOrdersSubtitle">Track your personal orders and real-time kitchen status</p>
+          </div>
+          <button class="btn-icon-outline" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;" onclick="refreshMyOrders()">
+            🔄 Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- Orders List Container -->
+      <div id="userOrdersList" style="max-height: 480px; overflow-y: auto; padding-right: 0.3rem;">
+        <p style="color: var(--text-muted); text-align: center; padding: 2rem;">Loading your orders from C backend...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- JAVASCRIPT: CLIENT CORE & C API CONNECTIONS                             -->
+  <!-- ======================================================================= -->
+  <script>
+    // State management
+    let menuItems = [];
+    let currentCategory = 'All';
+    let searchQuery = '';
+    let cart = {}; // { itemId: quantity }
+    let selectedPaymentMethod = 'COD';
+    let currentUser = null;
+    let pendingCartItem = null; // { itemId, delta } queued when unauthenticated user adds item
+
+    // Free delivery threshold & tax constant matching server.h
+    const TAX_RATE = 0.05;
+    const FREE_DELIVERY_THRESHOLD = 199.00;
+    const STANDARD_DELIVERY_FEE = 29.00;
+
+    // Initialize application on load
+    document.addEventListener('DOMContentLoaded', () => {
+      // Restore persisted session from localStorage if available
+      try {
+        const savedUser = localStorage.getItem('bitecraft_user');
+        if (savedUser) {
+          currentUser = JSON.parse(savedUser);
+        }
+      } catch (e) {
+        console.warn('Error reading saved user session:', e);
+      }
+
+      renderAuthUI();
+      fetchMenu();
+    });
+
+    /**
+     * Fetches food catalog from C Backend endpoint GET /api/menu
+     */
+    async function fetchMenu() {
+      try {
+        const response = await fetch('/api/menu');
+        if (!response.ok) throw new Error('Network error fetching menu');
+        const data = await response.json();
+        menuItems = data.items || [];
+        renderMenu();
+      } catch (err) {
+        console.warn('API fetch failed or offline, rendering fallback dataset:', err);
+        // Fallback default dataset for offline preview
+        menuItems = [
+          {
+            id: 1,
+            name: "Truffle Smash Burger",
+            category: "Fast Food",
+            price: 12.99,
+            description: "Double Angus beef patty, melted aged cheddar, truffle aioli, caramelized onions on toasted brioche",
+            badge: "Chef's Special",
+            imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop&q=80"
+          },
+          {
+            id: 2,
+            name: "Artisan Margherita Pizza",
+            category: "Main Course",
+            price: 14.50,
+            description: "San Marzano tomato coulis, fresh buffalo mozzarella, hand-torn basil, extra virgin olive oil",
+            badge: "Popular",
+            imageUrl: "https://images.unsplash.com/photo-1604382355076-af4b0eb60143?w=600&auto=format&fit=crop&q=80"
+          },
+          {
+            id: 3,
+            name: "Crispy Peri-Peri Wings",
+            category: "Fast Food",
+            price: 9.99,
+            description: "8 golden crispy wings tossed in fiery African bird's-eye chili glaze with blue cheese dip",
+            badge: "Spicy",
+            imageUrl: "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=600&auto=format&fit=crop&q=80"
+          },
+          {
+            id: 4,
+            name: "Creamy Tuscan Fettuccine",
+            category: "Main Course",
+            price: 15.99,
+            description: "Fresh egg fettuccine tossed in velvety garlic-parmesan cream with sundried tomatoes and spinach",
+            badge: "Bestseller",
+            imageUrl: "https://images.unsplash.com/photo-1621996346565-e3d5d6281691?w=600&auto=format&fit=crop&q=80"
+          },
+          {
+            id: 5,
+            name: "Pan-Seared Salmon Bowl",
+            category: "Main Course",
+            price: 18.50,
+            description: "Wild Norwegian salmon fillet, organic tricolor quinoa, roasted asparagus, lemon-herb drizzle",
+            badge: "Healthy",
+            imageUrl: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80"
+          },
+          {
+            id: 6,
+            name: "Loaded Cali Burrito",
+            category: "Fast Food",
+            price: 11.25,
+            description: "Seasoned carne asada, crispy spiced fries, fresh guacamole, pico de gallo, chipotle crema",
+            badge: "Crowd Fav",
+            imageUrl: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=600&auto=format&fit=crop&q=80"
+          },
+          {
+            id: 7,
+            name: "Cold Brew Vanilla Foam",
+            category: "Beverages",
+            price: 4.95,
+            description: "18-hour slow-steeped Colombian cold brew topped with house-whipped vanilla sweet cream",
+            badge: "Trending",
+            imageUrl: "https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=600&auto=format&fit=crop&q=80"
+          },
+          {
+            id: 8,
+            name: "Sparkling Strawberry Mojito",
+            category: "Beverages",
+            price: 5.50,
+            description: "Crushed wild strawberries, fresh garden mint, Persian lime juice, effervescent club soda",
+            badge: "Refreshing",
+            imageUrl: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600&auto=format&fit=crop&q=80"
+          },
+          {
+            id: 9,
+            name: "Decadent Molten Lava Cake",
+            category: "Desserts",
+            price: 7.99,
+            description: "Warm Belgian dark chocolate cake with a molten truffle center, dusted with Dutch cocoa",
+            badge: "Must Try",
+            imageUrl: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=600&auto=format&fit=crop&q=80"
+          },
+          {
+            id: 10,
+            name: "New York Berry Cheesecake",
+            category: "Desserts",
+            price: 8.25,
+            description: "Velvety dense cream cheese cake on a honey graham crust, topped with wild berry compote",
+            badge: "Classic",
+            imageUrl: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=600&auto=format&fit=crop&q=80"
+          },
+          {
+            id: 11,
+            name: "Ceremonial Matcha Latte",
+            category: "Beverages",
+            price: 5.25,
+            description: "First-harvest Uji ceremonial matcha whisked with lightly sweetened oat milk",
+            badge: "Organic",
+            imageUrl: "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=600&auto=format&fit=crop&q=80"
+          },
+          {
+            id: 12,
+            name: "Parmesan Truffle Fries",
+            category: "Fast Food",
+            price: 6.99,
+            description: "Hand-cut Idaho russets fried to golden perfection, tossed with white truffle oil and reggiano",
+            badge: "Signature",
+            imageUrl: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=600&auto=format&fit=crop&q=80"
+          }
+        ];
+        renderMenu();
+      }
+    }
+
+    /**
+     * Renders menu cards based on active category and search filter
+     */
+    function renderMenu() {
+      const grid = document.getElementById('menuGrid');
+      grid.innerHTML = '';
+
+      const filtered = menuItems.filter(item => {
+        const matchesCategory = (currentCategory === 'All') || (item.category === currentCategory);
+        const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                              item.description.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesCategory && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 1rem; color: var(--text-muted);">
+            <div style="font-size: 3rem; margin-bottom: 0.5rem;">🔍</div>
+            <h3>No culinary matches found</h3>
+            <p>Try searching for a different dish or select another category above.</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const qty = cart[item.id] || 0;
+        const card = document.createElement('div');
+        card.className = 'food-card';
+
+        // Quantity control or Add to Cart button
+        const actionHtml = qty > 0 ? `
+          <div class="qty-counter-pill">
+            <button class="qty-counter-btn" onclick="updateItemQty(${item.id}, -1)">−</button>
+            <span class="qty-counter-num">${qty}</span>
+            <button class="qty-counter-btn" onclick="updateItemQty(${item.id}, 1)">+</button>
+          </div>
+        ` : `
+          <button class="btn-add-cart" onclick="updateItemQty(${item.id}, 1)">
+            <span>+ Add</span>
+          </button>
+        `;
+
+        card.innerHTML = `
+          <div class="card-media">
+            <img src="${item.imageUrl}" alt="${item.name}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80'">
+            ${item.badge ? `<span class="card-badge">${item.badge}</span>` : ''}
+            <span class="card-category-tag">${item.category}</span>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">${item.name}</h3>
+            <p class="card-desc">${item.description}</p>
+            <div class="card-footer">
+              <div class="card-price"><span>₹</span>${item.price.toFixed(2)}</div>
+              ${actionHtml}
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    /**
+     * Category filtering
+     */
+    function filterCategory(cat) {
+      currentCategory = cat;
+      const pills = document.querySelectorAll('.pill-btn');
+      pills.forEach(p => {
+        if (p.textContent.includes(cat) || (cat === 'All' && p.textContent.includes('All'))) {
+          p.classList.add('active');
+        } else {
+          p.classList.remove('active');
+        }
+      });
+      renderMenu();
+    }
+
+    /**
+     * Live search handler
+     */
+    function handleSearch() {
+      searchQuery = document.getElementById('searchInput').value.trim();
+      renderMenu();
+    }
+
+    /**
+     * Cart quantity modifier
+     */
+    function updateItemQty(itemId, delta) {
+      // Require registration / sign in before adding items to order list or cart
+      if (delta > 0 && !currentUser) {
+        pendingCartItem = { itemId, delta };
+        const targetItem = menuItems.find(m => m.id === itemId);
+        const itemName = targetItem ? targetItem.name : 'this item';
+        openAuthModal('login');
+        setAuthAlert(`Please sign in or create an account first to add "${itemName}" to your order list.`, false);
+        return;
+      }
+
+      const current = cart[itemId] || 0;
+      const updated = current + delta;
+
+      if (updated <= 0) {
+        delete cart[itemId];
+      } else {
+        cart[itemId] = updated;
+      }
+
+      renderMenu();
+      renderCart();
+    }
+
+    /**
+     * Clears entire cart
+     */
+    function clearCart() {
+      cart = {};
+      renderMenu();
+      renderCart();
+    }
+
+    /**
+     * Computes cart financial breakdown & updates sidebar
+     */
+    function renderCart() {
+      const listContainer = document.getElementById('cartItemsList');
+      const checkoutBtn = document.getElementById('checkoutBtn');
+      const navCartCount = document.getElementById('navCartCount');
+
+      const itemIds = Object.keys(cart);
+      let subtotal = 0;
+      let totalCount = 0;
+
+      listContainer.innerHTML = '';
+
+      if (itemIds.length === 0) {
+        listContainer.innerHTML = `
+          <div class="cart-empty-state">
+            <div class="icon">🍽️</div>
+            <p>Your cart is empty.</p>
+            <span style="font-size: 0.78rem; color: var(--text-subtle);">Select mouth-watering items from the menu to get started!</span>
+          </div>
+        `;
+        document.getElementById('cartSubtotal').textContent = '₹0.00';
+        document.getElementById('cartTax').textContent = '₹0.00';
+        document.getElementById('cartDelivery').textContent = '₹0.00';
+        document.getElementById('cartGrandTotal').textContent = '₹0.00';
+        document.getElementById('deliveryProgressBar').style.width = '0%';
+        document.getElementById('deliveryProgressMsg').textContent = `Add ₹${FREE_DELIVERY_THRESHOLD.toFixed(2)} for FREE Delivery`;
+        document.getElementById('deliveryProgressPct').textContent = '0%';
+        checkoutBtn.disabled = true;
+        navCartCount.textContent = '0';
+        return;
+      }
+
+      itemIds.forEach(idStr => {
+        const id = parseInt(idStr, 10);
+        const qty = cart[id];
+        const item = menuItems.find(m => m.id === id);
+        if (!item) return;
+
+        const lineTotal = item.price * qty;
+        subtotal += lineTotal;
+        totalCount += qty;
+
+        const row = document.createElement('div');
+        row.className = 'cart-item-row';
+        row.innerHTML = `
+          <div class="cart-item-info">
+            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-price">₹${item.price.toFixed(2)} each</div>
+          </div>
+          <div class="cart-item-actions">
+            <div class="qty-counter-pill" style="transform: scale(0.9);">
+              <button class="qty-counter-btn" onclick="updateItemQty(${item.id}, -1)">−</button>
+              <span class="qty-counter-num">${qty}</span>
+              <button class="qty-counter-btn" onclick="updateItemQty(${item.id}, 1)">+</button>
+            </div>
+            <div class="cart-item-subtotal">₹${lineTotal.toFixed(2)}</div>
+          </div>
+        `;
+        listContainer.appendChild(row);
+      });
+
+      // Financial math
+      const tax = subtotal * TAX_RATE;
+      const isFreeDelivery = subtotal >= FREE_DELIVERY_THRESHOLD;
+      const deliveryFee = isFreeDelivery ? 0.00 : STANDARD_DELIVERY_FEE;
+      const grandTotal = subtotal + tax + deliveryFee;
+
+      // Delivery progress bar
+      const progressPercent = Math.min(100, Math.round((subtotal / FREE_DELIVERY_THRESHOLD) * 100));
+      document.getElementById('deliveryProgressBar').style.width = `${progressPercent}%`;
+      document.getElementById('deliveryProgressPct').textContent = `${progressPercent}%`;
+
+      if (isFreeDelivery) {
+        document.getElementById('deliveryProgressMsg').innerHTML = `🎉 <strong>You unlocked FREE Delivery!</strong>`;
+      } else {
+        const remaining = (FREE_DELIVERY_THRESHOLD - subtotal).toFixed(2);
+        document.getElementById('deliveryProgressMsg').textContent = `Add ₹${remaining} more for FREE Delivery`;
+      }
+
+      // Update UI displays
+      document.getElementById('cartSubtotal').textContent = `₹${subtotal.toFixed(2)}`;
+      document.getElementById('cartTax').textContent = `₹${tax.toFixed(2)}`;
+      document.getElementById('cartDelivery').textContent = isFreeDelivery ? 'FREE (₹0.00)' : `₹${deliveryFee.toFixed(2)}`;
+      document.getElementById('cartGrandTotal').textContent = `₹${grandTotal.toFixed(2)}`;
+      
+      navCartCount.textContent = totalCount;
+      checkoutBtn.disabled = false;
+    }
+
+    /**
+     * Mobile cart drawer toggle
+     */
+    function toggleCartDrawer() {
+      const sidebar = document.getElementById('cartSidebar');
+      const overlay = document.getElementById('cartOverlay');
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('active');
+    }
+
+    /**
+     * Opens checkout details modal (auto-filling logged in customer details)
+     */
+    function openCheckoutModal() {
+      if (!currentUser) {
+        openAuthModal('login');
+        setAuthAlert('Please sign in or create an account first to proceed to checkout.', false);
+        return;
+      }
+
+      const totalStr = document.getElementById('cartGrandTotal').textContent;
+      document.getElementById('modalPayableTotal').textContent = totalStr;
+
+      // Auto-fill logged-in customer's details
+      if (currentUser.name) document.getElementById('custName').value = currentUser.name;
+      if (currentUser.phone) document.getElementById('custPhone').value = currentUser.phone;
+      if (currentUser.address) document.getElementById('custAddress').value = currentUser.address;
+
+      openModal('checkoutModal');
+    }
+
+    /**
+     * Payment method selection
+     */
+    function selectPayment(elem, method) {
+      document.querySelectorAll('.payment-option-card').forEach(el => el.classList.remove('active'));
+      elem.classList.add('active');
+      selectedPaymentMethod = method;
+    }
+
+    /**
+     * Submits order to C Backend via POST /api/order
+     */
+    async function submitOrder(e) {
+      e.preventDefault();
+      const submitBtn = document.getElementById('submitOrderBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<span>Transmitting to C Sockets...</span>`;
+
+      // Build payload matching C parser in server.c
+      const payload = {
+        username: currentUser ? currentUser.username : "guest",
+        customerName: document.getElementById('custName').value.trim(),
+        customerPhone: document.getElementById('custPhone').value.trim(),
+        deliveryAddress: document.getElementById('custAddress').value.trim(),
+        notes: document.getElementById('custNotes').value.trim(),
+        paymentMethod: selectedPaymentMethod,
+        items: Object.keys(cart).map(id => ({
+          id: parseInt(id, 10),
+          qty: cart[id]
+        }))
+      };
+
+      try {
+        const response = await fetch('/api/order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error('Server returned error status: ' + response.status);
+        }
+
+        const invoice = await response.json();
+        closeModal('checkoutModal');
+        showInvoice(invoice);
+        clearCart();
+      } catch (err) {
+        console.error('Order submission error:', err);
+        // If testing frontend directly without server running, create simulated invoice
+        alert('Server response simulated for demonstration (connect C server on port 8080 for live sockets).');
+        const simulatedInvoice = {
+          orderId: "ORD-" + new Date().toISOString().slice(0,10).replace(/-/g,'') + "-9482",
+          timestamp: new Date().toLocaleString(),
+          status: "Confirmed",
+          customer: {
+            name: payload.customerName,
+            phone: payload.customerPhone,
+            address: payload.deliveryAddress
+          },
+          pricing: {
+            subtotal: 27.49,
+            tax: 1.37,
+            deliveryFee: 2.99,
+            total: 31.85
+          },
+          items: payload.items.map(it => {
+            const m = menuItems.find(x => x.id === it.id) || { name: "Special Dish", price: 10.0 };
+            return {
+              name: m.name,
+              quantity: it.qty,
+              unitPrice: m.price,
+              subtotal: m.price * it.qty
+            };
+          })
+        };
+        closeModal('checkoutModal');
+        showInvoice(simulatedInvoice);
+        clearCart();
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<span>Confirm & Place Order</span><span>⚡</span>`;
+      }
+    }
+
+    /**
+     * Renders confirmed invoice modal
+     */
+    function showInvoice(inv) {
+      document.getElementById('invOrderId').textContent = inv.orderId;
+      document.getElementById('invTimestamp').textContent = inv.timestamp;
+      document.getElementById('invCustName').textContent = inv.customer.name;
+      document.getElementById('invCustPhone').textContent = inv.customer.phone;
+      document.getElementById('invCustAddress').textContent = inv.customer.address;
+
+      const tbody = document.getElementById('invItemsBody');
+      tbody.innerHTML = '';
+
+      (inv.items || []).forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${item.name}</strong></td>
+          <td style="text-align: center;">${item.quantity}</td>
+          <td style="text-align: right;">₹${item.unitPrice.toFixed(2)}</td>
+          <td style="text-align: right;"><strong>₹${item.subtotal.toFixed(2)}</strong></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('invSubtotal').textContent = `₹${inv.pricing.subtotal.toFixed(2)}`;
+      document.getElementById('invTax').textContent = `₹${inv.pricing.tax.toFixed(2)}`;
+      document.getElementById('invDelivery').textContent = inv.pricing.deliveryFee === 0 ? 'FREE' : `₹${inv.pricing.deliveryFee.toFixed(2)}`;
+      document.getElementById('invGrandTotal').textContent = `₹${inv.pricing.total.toFixed(2)}`;
+
+      openModal('invoiceModal');
+    }
+
+    /**
+     * Modal display helpers
+     */
+    function openModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) modal.classList.add('active');
+    }
+
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) modal.classList.remove('active');
+    }
+
+    /* ======================================================================= */
+    /* AUTHENTICATION & CUSTOMER ACCOUNT MANAGEMENT                            */
+    /* ======================================================================= */
+
+    /**
+     * Updates top-right navbar based on current customer login state
+     */
+    function renderAuthUI() {
+      const container = document.getElementById('authNavContainer');
+      if (!container) return;
+
+      if (!currentUser) {
+        container.innerHTML = `
+          <button class="btn-icon-outline" onclick="openAuthModal('login')" title="Sign In">
+            <span>🔑</span> <span>Sign In</span>
+          </button>
+          <button class="btn-signup-pill" onclick="openAuthModal('signup')" title="Create Account">
+            <span>✨</span> <span>Sign Up</span>
+          </button>
+        `;
+      } else {
+        const firstName = currentUser.name ? currentUser.name.split(' ')[0] : currentUser.username;
+        const initial = firstName.charAt(0).toUpperCase();
+
+        container.innerHTML = `
+          <div class="user-pill-container">
+            <button class="user-profile-pill" onclick="openMyOrdersModal()" title="View your personal order history">
+              <span class="user-avatar-circle">${initial}</span>
+              <span class="user-display-name">${firstName}</span>
+              <span class="user-orders-tag">📦 My Orders</span>
+            </button>
+            <button class="btn-icon-square" onclick="logoutUser()" title="Sign Out (${currentUser.username})">
+              🚪
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    /**
+     * Opens authentication modal with specified active tab
+     */
+    function openAuthModal(tab) {
+      clearAuthAlert();
+      switchAuthTab(tab);
+      openModal('authModal');
+    }
+
+    /**
+     * Switches between Sign In and Sign Up tabs in auth modal
+     */
+    function switchAuthTab(tab) {
+      clearAuthAlert();
+      const loginForm = document.getElementById('loginForm');
+      const signupForm = document.getElementById('signupForm');
+      const tabLogin = document.getElementById('tabBtnLogin');
+      const tabSignup = document.getElementById('tabBtnSignup');
+      const title = document.getElementById('authModalTitle');
+      const subtitle = document.getElementById('authModalSubtitle');
+
+      if (tab === 'login') {
+        loginForm.style.display = 'block';
+        signupForm.style.display = 'none';
+        tabLogin.classList.add('active');
+        tabSignup.classList.remove('active');
+        title.textContent = 'Welcome Back';
+        subtitle.textContent = 'Sign in to access and track your personal order history.';
+      } else {
+        loginForm.style.display = 'none';
+        signupForm.style.display = 'block';
+        tabLogin.classList.remove('active');
+        tabSignup.classList.add('active');
+        title.textContent = 'Create Customer Account';
+        subtitle.textContent = 'Register to save delivery addresses and track orders in real-time.';
+      }
+    }
+
+
+    /**
+     * Sets notification banner in auth modal
+     */
+    function setAuthAlert(msg, isError) {
+      const banner = document.getElementById('authAlertBanner');
+      banner.style.display = 'block';
+      banner.textContent = msg;
+      if (isError) {
+        banner.style.background = 'rgba(239, 68, 68, 0.15)';
+        banner.style.color = '#f87171';
+        banner.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+      } else {
+        banner.style.background = 'rgba(0, 255, 136, 0.15)';
+        banner.style.color = '#00ff88';
+        banner.style.border = '1px solid rgba(0, 255, 136, 0.35)';
+      }
+    }
+
+    function clearAuthAlert() {
+      const banner = document.getElementById('authAlertBanner');
+      if (banner) banner.style.display = 'none';
+    }
+
+    /**
+     * Handles customer Login form submission (POST /api/login)
+     */
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('loginSubmitBtn');
+      btn.disabled = true;
+      btn.innerHTML = `<span>Signing in...</span>`;
+      clearAuthAlert();
+
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || 'Authentication failed. Please verify credentials.');
+        }
+
+        // Save session
+        currentUser = data.user;
+        localStorage.setItem('bitecraft_user', JSON.stringify(currentUser));
+        renderAuthUI();
+        closeModal('authModal');
+
+        // If user was prompted to login while adding an item to their order/cart, add it now
+        if (pendingCartItem) {
+          const itemToAdd = pendingCartItem;
+          pendingCartItem = null;
+          updateItemQty(itemToAdd.itemId, itemToAdd.delta);
+          if (window.innerWidth <= 1024) {
+            const sidebar = document.getElementById('cartSidebar');
+            if (sidebar && !sidebar.classList.contains('open')) {
+              toggleCartDrawer();
+            }
+          }
+        } else {
+          openMyOrdersModal();
+        }
+      } catch (err) {
+        setAuthAlert(err.message, true);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>Sign In &amp; Track Orders</span><span>&rarr;</span>`;
+      }
+    }
+
+    /**
+     * Handles customer Sign Up form submission (POST /api/signup)
+     */
+    async function handleSignupSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('signupSubmitBtn');
+      btn.disabled = true;
+      btn.innerHTML = `<span>Creating account...</span>`;
+      clearAuthAlert();
+
+      const payload = {
+        name: document.getElementById('signupName').value.trim(),
+        username: document.getElementById('signupUsername').value.trim(),
+        password: document.getElementById('signupPassword').value.trim(),
+        phone: document.getElementById('signupPhone').value.trim(),
+        address: document.getElementById('signupAddress').value.trim()
+      };
+
+      try {
+        const response = await fetch('/api/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || 'Failed to register account.');
+        }
+
+        // Save session
+        currentUser = data.user;
+        localStorage.setItem('bitecraft_user', JSON.stringify(currentUser));
+        renderAuthUI();
+        closeModal('authModal');
+
+        // If user was prompted to sign up while adding an item to their order/cart, add it now
+        if (pendingCartItem) {
+          const itemToAdd = pendingCartItem;
+          pendingCartItem = null;
+          updateItemQty(itemToAdd.itemId, itemToAdd.delta);
+          if (window.innerWidth <= 1024) {
+            const sidebar = document.getElementById('cartSidebar');
+            if (sidebar && !sidebar.classList.contains('open')) {
+              toggleCartDrawer();
+            }
+          }
+        } else {
+          openMyOrdersModal();
+        }
+      } catch (err) {
+        setAuthAlert(err.message, true);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>Create Account &amp; Continue</span><span>✨</span>`;
+      }
+    }
+
+    /**
+     * Signs out current customer
+     */
+    function logoutUser() {
+      currentUser = null;
+      localStorage.removeItem('bitecraft_user');
+      renderAuthUI();
+      closeModal('myOrdersModal');
+    }
+
+    /**
+     * Opens the personal orders modal for the logged-in customer
+     */
+    function openMyOrdersModal() {
+      if (!currentUser) {
+        openAuthModal('login');
+        return;
+      }
+      openModal('myOrdersModal');
+      refreshMyOrders();
+    }
+
+    /**
+     * Fetches and renders orders belonging exclusively to the current customer
+     */
+    async function refreshMyOrders() {
+      if (!currentUser) return;
+      const container = document.getElementById('userOrdersList');
+      const subtitle = document.getElementById('myOrdersSubtitle');
+      subtitle.textContent = `Showing verified orders for ${currentUser.name || currentUser.username} (@${currentUser.username})`;
+      container.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 2.5rem 1rem;">Fetching orders from C server...</p>`;
+
+      try {
+        const res = await fetch(`/api/user/orders?username=${encodeURIComponent(currentUser.username)}`);
+        if (!res.ok) throw new Error('Failed to retrieve personal orders');
+        const data = await res.json();
+        const orders = data.orders || [];
+
+        if (orders.length === 0) {
+          container.innerHTML = `
+            <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+              <div style="font-size: 3rem; margin-bottom: 0.5rem; opacity: 0.7;">📦</div>
+              <h4 style="color: #fff; font-size: 1.1rem; margin-bottom: 0.35rem;">No orders placed yet</h4>
+              <p style="font-size: 0.85rem; max-width: 320px; margin: 0 auto 1.25rem;">
+                Explore our gourmet menu and add your favorite dishes to place your first order!
+              </p>
+              <button class="btn-checkout" style="max-width: 220px; margin: 0 auto; padding: 0.65rem 1rem;" onclick="closeModal('myOrdersModal')">
+                Browse Menu
+              </button>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = '';
+        orders.slice().reverse().forEach(ord => {
+          const card = document.createElement('div');
+          card.className = 'user-order-card';
+          card.innerHTML = `
+            <div class="user-order-header">
+              <div>
+                <span class="user-order-id">${ord.orderId}</span>
+                <span style="font-size: 0.75rem; color: var(--text-subtle); margin-left: 0.5rem;">${ord.timestamp}</span>
+              </div>
+              <span class="user-order-status-badge">
+                <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--secondary);"></span>
+                ${ord.status}
+              </span>
+            </div>
+            <div class="user-order-details">
+              <strong>Items:</strong> ${ord.items || 'Gourmet meal selections'}
+            </div>
+            <div class="user-order-footer">
+              <div class="user-order-total">
+                Total: <span>₹${ord.total}</span>
+              </div>
+              <button class="btn-icon-outline" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;" onclick="window.print()">
+                🖨️ Receipt
+              </button>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+
+      } catch (err) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 2rem; color: #f87171;">
+            <p>Failed to connect to C backend: ${err.message}</p>
+          </div>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>
